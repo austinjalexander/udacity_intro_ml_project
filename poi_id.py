@@ -139,8 +139,6 @@ def grid_searcher(clf, pca_skb, output):
     t_or_f = [True, False]
     #powers_of_ten = [10**x for x in range(-5,5)]
     logspace = np.logspace(-5, 5, 10)
-    #kernels = ['linear', 'poly', 'rbf', 'sigmoid']  # takes too long, unfortunately
-    kernels = ['rbf']
     criteria = ['gini', 'entropy']
     splitters = ['best', 'random']
     max_features = ['auto', 'sqrt', 'log2', None]
@@ -152,7 +150,6 @@ def grid_searcher(clf, pca_skb, output):
     pipeline_clf = ""
     
     if pca_skb == "pca_skb":
-        #pipeline = make_pipeline(MinMaxScaler(), make_union(RandomizedPCA(), SelectKBest()), clf)
         pipeline = make_pipeline(StandardScaler(), make_union(RandomizedPCA(), SelectKBest()), clf)
 
         params = dict(featureunion__randomizedpca__n_components = even_range,
@@ -162,7 +159,6 @@ def grid_searcher(clf, pca_skb, output):
                       featureunion__selectkbest__k = even_range)   
         
     elif pca_skb == "pca":
-        #pipeline = make_pipeline(MinMaxScaler(), RandomizedPCA(), clf)
         pipeline = make_pipeline(StandardScaler(), RandomizedPCA(), clf)
 
         params = dict(randomizedpca__n_components = [4],
@@ -171,7 +167,6 @@ def grid_searcher(clf, pca_skb, output):
                       randomizedpca__random_state = random_state)   
         
     elif pca_skb == "skb":
-        #pipeline = make_pipeline(MinMaxScaler(), SelectKBest(), clf)
         pipeline = make_pipeline(StandardScaler(), SelectKBest(), clf)
 
         params = dict(selectkbest__k = [4])   
@@ -185,13 +180,6 @@ def grid_searcher(clf, pca_skb, output):
         #params["{}__min_samples_split".format(pipeline_clf)] = even_range
         params["{}__class_weight".format(pipeline_clf)] = ['auto', None]
         params["{}__random_state".format(pipeline_clf)] = random_state
-    
-    if pipeline_clf == 'svc':
-        params['svc__C'] = logspace
-        params['svc__kernel'] = kernels
-        #params['svc__degree'] = [1,2,3,4,5]  # for use with 'poly'
-        params['svc__gamma'] = logspace
-        params['svc__random_state'] = random_state
         
     # cross validation    
     cv = StratifiedShuffleSplit(y, test_size=0.2, random_state=random_state[0])
