@@ -1,4 +1,4 @@
-# udacity_intro_ml_project
+# _Udacity_ Intro ML Final Project
 
 ## Answers to Project Questions
 
