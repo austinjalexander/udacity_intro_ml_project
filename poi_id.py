@@ -20,6 +20,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import RandomizedPCA
 from sklearn.feature_selection import SelectKBest
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_union
 from sklearn.pipeline import make_pipeline
 from sklearn.grid_search import GridSearchCV
@@ -197,7 +198,7 @@ def grid_searcher(clf, pca_skb, output):
     # split into training and testing data for reporting results
     if output == True:
         print "#"*50
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=random_state[0])
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=random_state[0])
 
     if output == True:
         print "\nBEST ESTIMATOR:"
