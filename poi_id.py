@@ -15,29 +15,22 @@ from tester import test_classifier, dump_classifier_and_data
 
 from sklearn.cross_validation import train_test_split
 from sklearn.cross_validation import StratifiedShuffleSplit
+
 from sklearn.preprocessing import Imputer
-from sklearn.preprocessing import MinMaxScaler
+
+from sklearn.feature_selection import SelectKBest
+
+from sklearn.pipeline import make_pipeline
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import RandomizedPCA
-from sklearn.feature_selection import SelectKBest
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_union
-from sklearn.pipeline import make_pipeline
+
 from sklearn.grid_search import GridSearchCV
 
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier 
-from sklearn.svm import SVC
-from sklearn.cluster import KMeans
-
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
 
 # LOAD DATA
-
 ### Load the dictionary containing the dataset
 data_dict = pickle.load(open("ud120-projects/final_project/final_project_dataset.pkl", "r") )
 my_dataset = data_dict
@@ -72,26 +65,6 @@ y = df.poi.values
 # create initial features
 X = df.drop('poi', axis=1).values
 
-# OUTLIER REMOVAL
-### Task 2: Remove outliers
-# hand-tuned to remove ~5% (in this case, 7%)
-num_rows = X.shape[0]
-num_cols = X.shape[1]
-rows_to_remove = set()
-
-for i in xrange(num_cols):
-    point_five_percentile = np.percentile(X[:,i], 0.5)
-    ninety_nine_point_five_percentile = np.percentile(X[:,i], 99.5)
-    
-    for j in xrange(num_rows):
-        if X[j,i] < point_five_percentile or X[j,i] > ninety_nine_point_five_percentile:
-            rows_to_remove.add(j)
-
-X = np.delete(X, list(rows_to_remove), axis=0)
-y = np.delete(y, list(rows_to_remove))
-    
-names = np.delete(names, list(rows_to_remove))
-
 # 'NaN' IMPUTATION
 # impute 'NaN' values to column means
 imp = Imputer(missing_values='NaN', strategy='median', axis=0)
@@ -99,6 +72,13 @@ imp.fit(X)
 X = imp.transform(X)
 
 imp_values = imp.statistics_
+
+# OUTLIER REMOVAL
+### Task 2: Remove outliers
+X = np.delete(X, 104, axis=0)
+y = np.delete(y, 104)
+    
+names = np.delete(names, 104)
 
 # FEATURE CREATION
 ### Task 3: Create new feature(s)
