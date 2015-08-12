@@ -68,6 +68,21 @@ my_dataset = data_dict
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
+# remove features (based on previous score reviews)
+k = 5
+skb = SelectKBest(k=k)
+skb = skb.fit(features,labels)
+features = skb.transform(features)
+
+top_scores = np.sort(skb.scores_)[-k:]
+
+new_features_list = ['poi']
+for i in xrange(len(features_list[1:])):
+    if skb.scores_[i] in top_scores:
+        new_features_list.append(features_list[1:][i])
+
+features_list = new_features_list
+
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
 ### Note that if you want to do PCA or other multi-stage operations,
@@ -78,7 +93,8 @@ clf = GaussianNB()    # Provided to give you a starting point. Try a varity of c
 #clf = DecisionTreeClassifier()
 #clf = SVC()
 
-pipeline = make_pipeline(StandardScaler(), RandomizedPCA(), clf)
+pipeline = make_pipeline(StandardScaler(), clf)
+#pipeline = make_pipeline(StandardScaler(), RandomizedPCA(), clf)
 
 # cross validation    
 cv = StratifiedShuffleSplit(labels, test_size=0.2, random_state=42)
@@ -87,10 +103,10 @@ cv = StratifiedShuffleSplit(labels, test_size=0.2, random_state=42)
 params = dict()
 
 # for PCA
-params['randomizedpca__iterated_power'] = [1, 2, 3]
-params['randomizedpca__n_components'] = [2, 4, 6, 8, 10]
-params['randomizedpca__random_state'] = [42]
-params['randomizedpca__whiten'] = [True, False]
+#params['randomizedpca__iterated_power'] = [1, 2, 3]
+#params['randomizedpca__n_components'] = [2, 4, 6, 8, 10]
+#params['randomizedpca__random_state'] = [42]
+#params['randomizedpca__whiten'] = [True, False]
 
 if str(clf)[0] == 'D':
     params['decisiontreeclassifier__criterion'] = ['gini', 'entropy']

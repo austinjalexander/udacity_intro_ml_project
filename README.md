@@ -2,7 +2,7 @@
 
 ## Answers to Project Questions
 
-1) The goal of this project is to classify _person's of interest_ (POIs) using Enron financial and email-frequency data provided by _Udacity_. The data set includes 146 records (with 21 features), 18 records of which were labeled as POIs. By examining the data set and making use of what appear to be the most relevant features, it becomes possible to predict POIs with an accuracy rate better than guessing.
+1) The goal of this project is to classify _person's of interest_ (POIs) using Enron financial and email-frequency data provided by _Udacity_. The data set includes 146 records (with 20 original features), 18 records of which were labeled as POIs. By examining the data set and making use of what appear to be the most relevant features, it becomes possible to predict POIs with an accuracy rate better than guessing.
 
 [N.B. Unless otherwise specified, GaussianNB was used as a control classifier when discussing performance metrics.]
 
@@ -14,9 +14,7 @@ All missing values (encoded as 'NaN's) were imputed with their respective column
 
 2) I created a single new feature hoping that it would capture the relationship between _bonus_ and _salary_ (in this case, their ratio), which I hoped would have a relationship with POI identification. This modification caused the precision score to increase (precision: 0.14812), while the recall score remained unchanged.
 
-At this point, I added a **Pipeline**, **StratifiedShuffleSplit**, and **GridSearchCV**. This modification did not cause the precision or recall scores to change.
-
-I removed apparently unhelpful features by integrating **SelectKBest** into the **Pipeline** and reviewing the resulting scores.
+I removed apparently unhelpful features by reviewing **SelectKBest** scores for values of _k_ [1,20].
 
 <table>
   <thead>
@@ -397,7 +395,9 @@ I removed apparently unhelpful features by integrating **SelectKBest** into the 
   </tbody>
 </table>
 
-The best-scoring value of _k_ was 5. When _k = 5_, the features selected were _bonus_, _exercised_stock_options_, _salary_, _total_payments_, and _total_stock_value_. These were the only features included from this point forward.
+The best-scoring value of _k_ was 5. When _k = 5_, the precision score increased to 0.50161 and, while the recall score technically decreased to 0.39050, this pair of scores represents a much better balance than those scores witnessed above using all of the features. As a result, the features kept for the remainder of the study were: _exercised_stock_options_, _total_stock_value_, _bonus_, _salary_, and _deferred_income_.
+
+At this point, I added a **Pipeline**, **StratifiedShuffleSplit**, and **GridSearchCV**. This modification did not cause the precision or recall scores to change.
 
 Then, I added **StandardScaler** to the **Pipeline**. This modification did not cause the precision or recall scores to change.
 
@@ -407,15 +407,15 @@ Finally, I provided parameter options for **GridSearchCV** to tune for **Randomi
 
 3) As noted above, **GaussianNB** was used as the control classifier. 
 
-**DecisionTreeClassifier** was implemented. With its default settings, it gave lower precision and recall scores: 0.22455 and 0.24150, respectively.
+**DecisionTreeClassifier** was implemented. With its default settings, it gave lower precision and recall scores: 0.22458 and 0.24300, respectively.
 
-The following **DecisionTreeClassifier** parameter options were provided for **GridSearchCV** to tune: class_weight = ['auto', None], criterion = ['gini', 'entropy'], max_features = ['auto', 'sqrt', 'log2', None]. On the first attempt, **GridSearchCV** selected the following values: class_weight=None, criterion='gini', max_features=None. These settings caused both the precision and recall scores to increase (precision: 0.30337, recall: 0.30200).
+The following **DecisionTreeClassifier** parameter options were provided for **GridSearchCV** to tune: class_weight = ['auto', None], criterion = ['gini', 'entropy'], max_features = ['auto', 'sqrt', 'log2', None]. On the first attempt, **GridSearchCV** selected the following values: class_weight='auto', criterion='entropy', max_features=None. These settings caused both the precision and recall scores to increase (precision: 0.30337, recall: 0.30200).
 
 **SVC** was implemented. With its default settings, it gave lower precision and recall scores: 0.27273 and 0.04350, respectively.
 
 The following **SVC** parameter options were provided for **GridSearchCV** to tune: C = [2**x for x in np.arange(-15, 15+1, 3)], gamma = [2**x for x in np.arange(-15, 15+1, 3)]. On the first attempt, **GridSearchCV** selected the following values: C=512, gamma=0.001953125. These settings caused both the precision and recall scores to increase: 0.44633 and 0.11850, respectively.
 
-Out of the classifiers used, **GaussianNB** performed the best (precision: 0.58291, recall: 0.34800), so it was selected as the final algorithm.
+Out of the classifiers (and preprocessing techniques) used, **GaussianNB** performed the best (without PCA: precision: 0.50161, recall: 0.39050), so it was selected as the final algorithm.
 
 4) Most algorithms have parameters that should be tuned in order to modify their training performance, which is in part dependent on the nature of the data set under consideration.
 
@@ -429,7 +429,11 @@ Unlike in the current project, if the data separation process described above is
 
 6) Given the distribution of the final testing set, in particular the small number of POIs, and likely in part due to the binary nature of this specific classification problem, the generic score (i.e., the percentage of correct predictions out of the total number of predictions) for each classifier is easily made higher when POIs are not identified at all (i.e., all predicted labels are 0). 
 
-Thus, in this case, using a _confusion matrix_ (and the resulting precision and recall scores) is a better indicator of model/prediction performance. In the current context, both precision and recall scores may be understood as capturing the percentage of correctly-identified POIs; however, precision scores incoporate the number of incorrectly-indentified POIs while recall scores incorporate the number of incorrectly-unidentified POIs. 
+Thus, in this case, using a _confusion matrix_ (and the resulting precision and recall scores) is a better indicator of model/prediction performance. In the current context, both precision and recall scores may be understood as capturing the percentage of correctly-identified POIs; however, precision scores incoporate the number of incorrectly-identified POIs while recall scores incorporate the number of incorrectly-unidentified POIs. 
+
+In the case of the final preprocessing and algorithm selections made above, a precision score of 0.50161 may be understood as the percentage of correctly-identified POIs out of all identified POIs. Or, in other words for this particular score, about 50% of all identified POIs were in fact POIs.
+
+Meanwhile, a recall score of 0.39050 may be understood as the percentage of correctly-identified POIs out the total number of known POIs. Or, in other words for this particular score, almost 40% of all the POIs were correctly identified (which, of course, means that about 60% escaped identification).
 
 ---
 
