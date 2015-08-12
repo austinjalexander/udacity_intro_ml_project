@@ -56,10 +56,10 @@ for feature in features_list[1:]:
             data_dict[key][feature] = median
 
 ### Task 3: Create new feature(s)
-#new_feature = 'bonus_salary_ratio'
-#features_list.append(new_feature)
-#for key in data_dict.keys():
-#    data_dict[key][new_feature] = np.true_divide(data_dict[key]['bonus'],data_dict[key]['salary'])
+new_feature = 'bonus_salary_ratio'
+features_list.append(new_feature)
+for key in data_dict.keys():
+    data_dict[key][new_feature] = np.true_divide(data_dict[key]['bonus'],data_dict[key]['salary'])
 
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict

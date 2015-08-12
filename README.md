@@ -6,7 +6,7 @@
 
 [N.B. Unless otherwise specified, GaussianNB was used as a control classifier when discussing performance metrics.]
 
-Using all of the initial features (except for email address (which was removed as a feature due to its obvious ability to identify POIs), precision and recall scores (defined below) were 0.14720 and 0.83, respectively.
+Using all of the initial features (except for email address (which was removed as a feature due to its obvious ability to identify POIs), precision and recall scores (defined below) were 0.14720 and 0.83000, respectively.
 
 Outliers were present in the data. By reviewing those outliers, it became clear that at least one of the records did not represent an individual but the calculated totals of each column. This _TOTAL_ record was removed from the data set, as well as record with the key _THE TRAVEL AGENCY IN THE PARK_. This modification caused the precision and recall scores to increase (precision: 0.14746, recall: 0.83450).
 
@@ -14,9 +14,24 @@ All missing values (encoded as 'NaN's) were imputed with their respective column
 
 2) I created a single new feature hoping that it would capture the relationship between _bonus_ and _salary_ (in this case, their ratio), which I hoped would have a relationship with POI identification. This modification caused the precision score to increase (precision: 0.14812), while the recall score remained unchanged.
 
-I removed apparently unhelpful features by implementing **SelectKBest** and reviewing the resulting scores. _bonus_, _deferred_income_, _exercised_stock_options_, _salary_, and _total_stock_value_ all scored above 10. After removing all other features, the precision score increased (0.50161) and the recall score decreased (0.39050).
-
 At this point, I added a **Pipeline**, **StratifiedShuffleSplit**, and **GridSearchCV**. This modification did not cause the precision or recall scores to change.
+
+I removed apparently unhelpful features by integrating **SelectKBest** into the **Pipeline** and reviewing the resulting scores.
+
+<table>
+<thead>
+  <th>k</th>
+  <th>precision</th>
+  <th>recall</th>
+</thead>
+<tbody>
+  <tr>
+    <td>1</td>
+    <td>0.46933</td>
+    <td>0.25250</td>
+  </tr>
+</tbody>
+</table>
 
 Then, I added **StandardScaler** to the **Pipeline**. This modification did not cause the precision or recall scores to change.
 
